@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <style>
+       body{
+            margin: 0px;
+            padding: 0px;
+        }
+    </style>
+    <canvas id="draw" width="800" height="800"></canvas>
+
+    <script>
+     const canvas = document.querySelector('#draw')
+     const ctx = canvas.getContext('2d') //Donde hacemos nuestros dibujos para nuestro lienzo.
+     canvas.width = window.innerWidth;
+     canvas.height = window.innerHeight;
+
+     let direction = 0;
+     //background
+     ctx.fillStyle = "black";
+     ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+
+     ctx.strokeStyle = 'pink'; //Color del pincel
+     ctx.lineJoin = 'round'; // Si la linea del pincel es mas redonda.
+     ctx.lineCap = 'round'; 
+     ctx.lineWidth = 20; //Grosor del pincel. 
+
+     //El efecto de que el trazo se vea en capaz, como si dibujaras arriba de cada color. 
+    // ctx.globalCompositeOperation = 'multiply'
+
+     let isDrawing = false;
+     //Nos sirven para saber a que parte del canvas estamos moviendo el mouse.
+     let lastX = 0;   
+     let lastY = 0;
+
+     //Color arcoiris.
+     let hue = 0;
+    
+
+     function draw(e){
+         if(!isDrawing) return; //Para la funcion cuando no esta el mouse clickeado
+         console.log(e)
+         //determinamos el arcoiris del trazo. 
+         ctx.strokeStyle= `hsl(${hue},100%,70%)`; //comienza en rojo. porque es 0. 
+
+         //Para empezar a pintar, compenzamos la ruta.
+         ctx.beginPath();
+         //Start from
+         ctx.moveTo(lastX, lastY)
+         //go to 
+         ctx.lineTo(e.offsetX, e.offsetY) //.offsetX and Y, provienen del valor real 
+         //No vamos a ver lo que pintamos hasta que llamemos a .stroke()
+         ctx.stroke()
+         //Asocuamos los valores de X e Y dependiendo donde este el mouse
+         lastX  = e.offsetX
+         lastY = e.offsetY
+         hue++ //Lo incrementamos para que vaya cambiando el color. 
+         if(hue>=360){
+           hue = 0;
+         }
+         if(ctx.lineWidth >= 200 || ctx.lineWidth <= 1){
+             direction = !direction 
+         }
+         if(direction){
+             ctx.lineWidth++;
+         }else{
+             ctx.lineWidth--;
+         }
+         
+     }
+    
+     canvas.addEventListener('mousedown', (e) => {
+		isDrawing = true;
+		[lastX, lastY] = [e.offsetX, e.offsetY];
+	});
+      canvas.addEventListener('mousemove', draw);
+      canvas.addEventListener('mouseup', () => isDrawing = false);
+      canvas.addEventListener('mouseout', () => isDrawing = false);
+
+    </script>
+</body>
+</html>
